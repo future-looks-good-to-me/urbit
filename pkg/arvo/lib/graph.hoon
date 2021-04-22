@@ -155,6 +155,30 @@
     (snoc lis [child-index childless-node])
   (tap-deep child-index p.children.node)
 ::
+++  tap-deep-time
+  |=  [=index:store =graph:store many=@ud]
+  ^-  (list [index:store node:store])
+  =/  nodes  (tap:orm:store graph)
+  =|  lis=(list [index:store node:store])
+  =|  counter=@ud
+  |-
+  ?~  nodes  lis
+  =/  child-index  (snoc index key.i.nodes)
+  =/  childless-node  val.i.nodes(children [%empty ~])
+  ?:  ?=(%empty -.children.val.i.nodes)
+  ?:  =(counter many)  lis
+  ^-  (list [index:store node:store])
+  $(lis (snoc lis [child-index childless-node]), nodes t.nodes, counter +(counter))
+  ^-  (list [index:store node:store])
+  %=  $
+  lis
+    %+  weld
+      (snoc lis [child-index childless-node])
+    (tap-deep child-index p.children.val.i.nodes)
+  nodes  t.nodes
+  counter  +(counter)
+  ==
+::
 ++  got-deep
   |=  [=graph:store =index:store]
   ^-  node:store
